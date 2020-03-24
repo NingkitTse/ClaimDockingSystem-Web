@@ -63,6 +63,7 @@
     getList
   } from '@/api/table';
   import downLoad from '@/utils/export'
+  import {getEntityInfos} from '@/api/entity'
 
   export default {
     filters: {
@@ -105,10 +106,11 @@
       }
     },
     created() {
-      this.fetchData()
+      this.fetchData();
+      this.queryEntites();
     },
     methods: {
-      fetchData() {
+      async fetchData() {
         this.listLoading = true
         getList().then(response => {
           this.list = response.data.items
@@ -123,6 +125,10 @@
       },
       exportSelection() {
         downLoad(this.multipleSelection, "导出数据.json");
+      },
+      async queryEntites() {
+        const res = getEntityInfos();
+        console.info(res);
       }
     },
     filters: {
