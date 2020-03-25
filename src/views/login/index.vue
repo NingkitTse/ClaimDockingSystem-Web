@@ -113,6 +113,7 @@ export default {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(() => {
+            console.info("login failed!!")
             this.loading = false
           })
         } else {
