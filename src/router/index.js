@@ -51,7 +51,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '看板', icon: 'dashboard' }
     }]
   },
 
@@ -61,9 +61,9 @@ export const constantRoutes = [
     redirect: '/device/table',
     children: [{
       path: 'table',
-      name: 'Table',
+      name: 'table',
       component: () => import('@/views/device/table'),
-      meta: { title: 'DeviceTable', icon: 'dashboard' }
+      meta: { title: '设备列表', icon: 'dashboard' }
     }]
   },
 

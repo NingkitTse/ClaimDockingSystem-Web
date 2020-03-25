@@ -17,44 +17,37 @@
         </el-checkbox-group>
       </el-form-item>
       <el-form-item>
-          <el-button @click="exportSelection()">导出选中数据</el-button>
+        <el-button @click="exportSelection()">导出选中数据</el-button>
       </el-form-item>
     </el-form>
-    <el-table @selection-change="handleSelectionChange" v-loading="listLoading" :data="list" element-loading-text="Loading" border fit highlight-current-row>
-      <el-table-column type="selection" width="55">
-      </el-table-column>
-      <el-table-column align="center" label="ID" width="95">
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Title">
-        <template slot-scope="scope">
-          {{ scope.row.title }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Author" width="110" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Pageviews" width="110" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.pageviews }}
-        </template>
-      </el-table-column>
-      <el-table-column class-name="status-col" label="Status" width="110" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status">{{ scope.row.status }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span>{{ scope.row.display_time }}</span>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div class="table-container">
+      <el-table @selection-change="handleSelectionChange" v-loading="listLoading" :data="list"
+        element-loading-text="Loading" border fit highlight-current-row>
+        <el-table-column type="selection" width="55">
+        </el-table-column>
+        <el-table-column fixed align="center" label="ID" width="95">
+          <template slot-scope="scope">
+            {{ scope.$index + 1 }}
+          </template>
+        </el-table-column>
+        <el-table-column fixed align="center" label="资产名称" width="95">
+          <template slot-scope="scope">
+            {{ scope.row.assetName }}
+          </template>
+        </el-table-column>
+        <el-table-column :label="value" resizable v-for="(value, key) of entityNameMap" :key="key" min-width="95">
+          <template slot-scope="scope">
+            {{ scope.row[key] }}
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="footer">
+        <el-pagination background layout="sizes, prev, pager, next, total, jumper" :total="total" :page-size="pageSize"
+          :current-page="current" :pager-count="11" :page-sizes="[10, 20, 50, 100, 200]" @size-change="handleSizeChange"
+          @current-change="handleCurrentChange">
+        </el-pagination>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -63,7 +56,10 @@
     getList
   } from '@/api/table';
   import downLoad from '@/utils/export'
-  import {getEntityInfos} from '@/api/entity'
+  import {
+    getEntityInfos
+  } from '@/api/entity'
+  import entityNameMap from '@/assets/json/entityNameMap.json'
 
   export default {
     filters: {
@@ -102,21 +98,17 @@
         supplyAdmins: ["涟源所", "天元所", "株洲市所"],
         multipleSelection: [],
         list: null,
-        listLoading: true
+        current: 1,
+        total: 10,
+        pageSize: 20,
+        listLoading: true,
+        entityNameMap,
       }
     },
     created() {
-      this.fetchData();
       this.queryEntites();
     },
     methods: {
-      async fetchData() {
-        this.listLoading = true
-        getList().then(response => {
-          this.list = response.data.items
-          this.listLoading = false
-        })
-      },
       onchangeFormCond() {
         console.info(this.form)
       },
@@ -127,8 +119,28 @@
         downLoad(this.multipleSelection, "导出数据.json");
       },
       async queryEntites() {
-        const res = getEntityInfos();
-        console.info(res);
+        this.listLoading = true
+        let param = {
+          current: this.current,
+          size: this.pageSize,
+        }
+        getEntityInfos(param).then(response => {
+          console.info(response);
+          let data = [];
+          this.list = (data = response.data).records;
+          this.listLoading = false;
+          this.total = data.total;
+          this.current = data.current;
+          this.pageSize = data.size;
+        });
+      },
+      handleSizeChange(size) {
+        this.pageSize = size;
+        this.queryEntites();
+      },
+      handleCurrentChange(current) {
+        this.current = current;
+        this.queryEntites();
       }
     },
     filters: {
@@ -147,6 +159,8 @@
   }
 
   .device-table-container {
+    padding: 10px;
+
     .image-checkbox-item {
       //   /deep/ .el-form-item__label {
       //     height: 74px;
@@ -174,6 +188,24 @@
         z-index: 100;
         border-radius: 50%;
         background-color: #2ac845;
+      }
+
+    }
+
+    .table-container {
+      margin-left: 80px;
+
+      .footer {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin-top: 5px;
+      }
+    }
+
+    /deep/ .el-table {
+      .cell {
+        // white-space: nowrap;
       }
     }
   }
