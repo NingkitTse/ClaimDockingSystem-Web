@@ -3,7 +3,7 @@
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
     <el-header :height="'100px'" :padding="0" class="top-header">
       <div class="logo_desc">
-        <span>电网资产数据融合、快速对接保险理赔</span>
+        <span>{{ title }}</span>
       </div>
       <img id="main_img" class="img" src="@/assets/home_logo_blank.gif">
     </el-header>
@@ -24,6 +24,7 @@
     AppMain
   } from './components'
   import ResizeMixin from './mixin/ResizeHandler'
+  import {mapState} from 'vuex'
 
   export default {
     name: 'Layout',
@@ -34,15 +35,6 @@
     },
     mixins: [ResizeMixin],
     computed: {
-      sidebar() {
-        return this.$store.state.app.sidebar
-      },
-      device() {
-        return this.$store.state.app.device
-      },
-      fixedHeader() {
-        return this.$store.state.settings.fixedHeader
-      },
       classObj() {
         return {
           hideSidebar: !this.sidebar.opened,
@@ -50,7 +42,9 @@
           withoutAnimation: this.sidebar.withoutAnimation,
           mobile: this.device === 'mobile'
         }
-      }
+      },
+      ...mapState("app", ['sidebar', 'device']),
+      ...mapState("settings", ['fixedHeader', 'title'])
     },
     methods: {
       handleClickOutside() {
@@ -106,7 +100,9 @@
     width: 100%;
   }
 
-  .el-header,
+  .el-header {
+    
+  }
   .el-main {
     padding: 10px 10px;
     overflow: hidden;
@@ -123,7 +119,7 @@
     height: 50px;
     top: 40px;
     z-index: 101;
-    font-size: 22px;
+    font-size: 20px;
     color: white;
   }
 

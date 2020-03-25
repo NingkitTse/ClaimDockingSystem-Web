@@ -1,18 +1,29 @@
 <template>
   <div class="dashboard-container">
+    <div class="dashboard-text">title: {{ title }}</div>
     <div class="dashboard-text">name: {{ name }}</div>
+    <el-input v-model="str"/>
+    <el-button size="mini" style="margin-top: 5px;" @click="changeSetting({key:'title', value:str})">应用修改</el-button>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions, mapState } from 'vuex';
 
 export default {
   name: 'Dashboard',
+  data() {
+    return {
+      str: "",
+    }
+  },
   computed: {
     ...mapGetters([
-      'name'
+      'name', 'title'
     ])
+  },
+  methods: {
+    ...mapActions("settings", ['changeSetting'])
   }
 }
 </script>

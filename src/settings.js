@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'Vue Admin Template',
+  title: '电网资产数据融合、快速对接保险理赔系统',
 
   /**
    * @type {boolean} true | false
