@@ -10,3 +10,14 @@ export function getEntityInfos(data) {
     data,
   })
 }
+
+export function modifyEntityInfo(data) {
+  return request({
+    url: '/entity/info',
+    method: 'put',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data,
+  })
+}

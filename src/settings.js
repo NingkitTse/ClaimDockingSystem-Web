@@ -12,5 +12,7 @@ module.exports = {
    * @type {boolean} true | false
    * @description Whether show the logo in sidebar
    */
-  sidebarLogo: false
+  sidebarLogo: false,
+
+  backEndBaseUrl: "http://127.0.0.1:8080/power",
 }
