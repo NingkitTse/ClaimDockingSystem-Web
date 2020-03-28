@@ -21,3 +21,14 @@ export function modifyEntityInfo(data) {
     data,
   })
 }
+
+export function getEntityInfosByGis(data) {
+  return request({
+    url: '/entity/gis/infos',
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data,
+  })
+}

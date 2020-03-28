@@ -1,10 +1,10 @@
 <template>
   <div class="device-table-container">
-    <el-radio-group v-model="searchBy">
-      <el-radio-button label=true>通过供电公司\供电所搜索设备</el-radio-button>
-      <el-radio-button label=false>通过GIS搜索设备</el-radio-button>
+    <el-radio-group v-model="searchByRela">
+      <el-radio-button :label=true>通过供电公司\供电所搜索设备</el-radio-button>
+      <el-radio-button :label=false>通过GIS搜索设备</el-radio-button>
     </el-radio-group>
-    <el-form v-if="searchBy" ref="form" :model="form" label-width="80px">
+    <el-form v-if="searchByRela" ref="form" :model="form" label-width="80px">
       <el-form-item class="image-checkbox-item" label="供电公司" style="margin-top: 20px">
         <el-checkbox-group v-model="form.powerSupplyCompany" @change="onchangeCompany()">
           <el-checkbox-button v-for="supplyCompany in supplyCompanies" :label="supplyCompany.name"
@@ -20,12 +20,33 @@
           </el-checkbox-button>
         </el-checkbox-group>
       </el-form-item>
-      <el-form-item>
+      <el-form-item label="功能">
         <el-button @click="exportSelection()">导出选中数据</el-button>
+        <el-button class="el-icon-search" @click="queryEntites()"> 重新查询</el-button>
       </el-form-item>
     </el-form>
-    <el-form ref="gisForm">
-
+    <el-form v-else ref="gisForm" class="gis-form" label-width="80px">
+      <baidu-map class="map-div" :center="center" :zoom="zoom" @ready="handlerMapInitHouseDetail"
+        @click="getMapClickInfo" :scroll-wheel-zoom='true'>
+      </baidu-map>
+      <el-form-item label="边界信息" v-if="this.bounds">
+        <span class="bound-item">
+          界面西经： <span>{{ this.bounds.Zd }}</span>
+        </span>
+        <span class="bound-item">
+          界面东经： <span>{{ this.bounds.Xd }}</span>
+        </span>
+        <span class="bound-item">
+          界面北纬： <span>{{ this.bounds.Ne }}</span>
+        </span>
+        <span class="bound-item">
+          界面南纬： <span>{{ this.bounds.Je }}</span>
+        </span>
+      </el-form-item>
+      <el-form-item label="功能">
+        <el-button @click="exportSelection()">导出选中数据</el-button>
+        <el-button class="el-icon-search" @click="queryEntites()"> 重新查询</el-button>
+      </el-form-item>
     </el-form>
     <div class="table-container">
       <el-table @selection-change="handleSelectionChange" v-loading="listLoading" :data="list"
@@ -61,7 +82,7 @@
         </el-table-column>
       </el-table>
       <div class="footer">
-        <el-pagination background layout="sizes, prev, pager, next, total, jumper" :total="total" :page-size="pageSize"
+        <el-pagination background layout="prev, pager, next, total, jumper" :total="total" :page-size="pageSize"
           :current-page="current" :pager-count="11" :page-sizes="[10, 20, 50, 100, 200]" @size-change="handleSizeChange"
           @current-change="handleCurrentChange">
         </el-pagination>
@@ -70,9 +91,16 @@
 
     <el-dialog title="编辑设备详情" :visible.sync="displayEditPanel" width="30%" :before-close="handleClose">
       <article>
-        <el-form ref="deviceForm" :model="selectedEntity" label-width="100px">
-          <el-form-item v-for="(value, key) of entityNameMap" :key="key" class="image-checkbox-item" :label="value">
+        <el-form ref="deviceForm" :rules="entityRule" :model="selectedEntity" label-width="100px">
+          <el-form-item v-for="(value, key) of entityNameMap" :key="key" :prop="key" class="image-checkbox-item"
+            :label="value">
             <el-input v-if="getEntityType(key) == 'text'" v-model="selectedEntity[key]" />
+            <el-input v-else-if="getEntityType(key) == 'lng'" type="number" :max="180" :min="-180"
+              v-model="selectedEntity[key]" />
+            <el-input v-else-if="getEntityType(key) == 'lat'" type="number" :max="90" :min="-90"
+              v-model="selectedEntity[key]" />
+            <el-input v-else-if="getEntityType(key) == 'tel'" type="tel" :max="90" :min="-90"
+              v-model="selectedEntity[key]" />
             <div v-else class="block">
               <el-date-picker v-model="selectedEntity[key]" type="datetime" placeholder="选择日期时间" align="right"
                 :picker-options="pickerOptions">
@@ -102,7 +130,8 @@
   import downLoad from '@/utils/export'
   import {
     getEntityInfos,
-    modifyEntityInfo
+    modifyEntityInfo,
+    getEntityInfosByGis
   } from '@/api/entity'
   import {
     uploadDeviceImg,
@@ -116,6 +145,12 @@
   import {
     getToken
   } from '@/utils/auth'
+  import {
+    handlerMapInit,
+    getMapClickInfo
+  } from '@/utils/bMapUtil'
+  import entityRule from "@/assets/rule/entityRule"
+  import mapGetters from "vuex"
 
   export default {
     filters: {
@@ -128,32 +163,25 @@
         return statusMap[status]
       }
     },
+    props: [
+      ...mapGetters(['searchByRela', 'supplyCompanies', 'supplyAdmins', 'center', 'radius'])
+    ],
     data() {
       return {
+        entityRule,
         backEndBaseUrl,
         form: {
           powerSupplyCompany: [],
           powerSupplyAdmin: [],
         },
-        searchBy: true,
+        searchByRela: true,
         selectedEntity: entityNameMap,
-        supplyCompanies: [{
-            name: "国家电网",
-            src: "static/img/powerSupplyCompany/stateGridCorporationOfChina.jpg",
-            supplyAdmins: ["所属变电站"],
-          },
-          {
-            name: "湖南省电网",
-            src: "static/img/powerSupplyCompany/chinaGuoDian.jpg",
-            supplyAdmins: ["涟源所", "伏口所", "七星所", "枫杨所", "涟源城区", "茅白所"],
-          }
-        ],
-        supplyAdmins: [],
+        
         multipleSelection: [],
         list: null,
         current: 1,
         total: 10,
-        pageSize: 20,
+        pageSize: 100000,
         listLoading: true,
         entityNameMap,
         displayEditPanel: false,
@@ -180,6 +208,13 @@
           }]
         },
         uploadFileList: [],
+
+        zoom: 15,
+        "center": {
+          lng: 111.67,
+          lat: 27.7
+        },
+        map: {},
       }
     },
     created() {
@@ -187,55 +222,55 @@
     },
     methods: {
       getToken,
-      onchangeCompany() {
-        let admins = this.supplyAdmins = [];
-        let companies = this.form.powerSupplyCompany;
-        for (let company of this.supplyCompanies) {
-          if (companies.includes(company.name)) {
-            admins.push(...company.supplyAdmins);
-          }
-        }
-        this.form.powerSupplyAdmin = this.form.powerSupplyAdmin.filter(e => admins.includes(e))
-        this.queryEntites();
-      },
-      onchangeFormCond() {
-        this.queryEntites();
-      },
+      s
       handleSelectionChange(val) {
         this.multipleSelection = val;
       },
       exportSelection() {
         downLoad(this.multipleSelection, "导出数据.json");
       },
+      processEntityInfos(response) {
+        // console.info(response);
+        this.listLoading = false;
+        let data = [];
+        let records = this.list = (data = response.data).records;
+        for (let record of records) {
+          let arr = record.deviceImgs || [];
+          if (!arr.length) {
+            continue;
+          }
+          let tmp = [];
+          arr.forEach(element => {
+            element.imgPath = backEndBaseUrl + element.imgPath;
+            tmp.push(element.imgPath);
+          });
+          record.imgPaths = tmp;
+        }
+        this.total = data.total;
+        this.current = data.current;
+        this.pageSize = data.size;
+      },
       async queryEntites() {
         this.listLoading = true;
-        let param = {
-          current: this.current,
-          size: this.pageSize,
-          ownDept: this.form.powerSupplyCompany,
-          ownTransStation: this.form.powerSupplyAdmin
-        }
-        getEntityInfos(param).then(response => {
-          console.info(response);
-          let data = [];
-          let records = this.list = (data = response.data).records;
-          for (let record of records) {
-            let arr = record.deviceImgs || [];
-            if (!arr.length) {
-              continue;
-            }
-            let tmp = [];
-            arr.forEach(element => {
-              element.imgPath = backEndBaseUrl + element.imgPath;
-              tmp.push(element.imgPath);
-            });
-            record.imgPaths = tmp;
+        if (this.searchByRela) {
+          let param = {
+            current: this.current,
+            size: this.pageSize,
+            ownDept: this.form.powerSupplyCompany,
+            ownTransStation: this.form.powerSupplyAdmin
           }
-          this.listLoading = false;
-          this.total = data.total;
-          this.current = data.current;
-          this.pageSize = data.size;
-        });
+          getEntityInfos(param).then(resp => this.processEntityInfos(resp));
+        } else {
+          if (!this.map) {
+            return;
+          }
+          this.bounds = this.map.getBounds();
+          let param = Object.assign({}, this.bounds, {
+            current: this.current,
+            size: this.pageSize,
+          });
+          getEntityInfosByGis(param).then(resp => this.processEntityInfos(resp));
+        }
       },
       getEntityType(key) {
         return entityTypeMap[key] || "text";
@@ -264,7 +299,12 @@
         }
       },
       handleClose() {
-
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            this.displayEditPanel = false;
+            done();
+          })
+          .catch(_ => {});
       },
 
       // 处理文件事件
@@ -285,17 +325,69 @@
       },
 
       submitEdit() {
-        this.displayEditPanel = false;
-        modifyEntityInfo(this.selectedEntity).then(response => {
-          // console.info(this.selectedEntity);
-          this.queryEntites();
+        this.$refs["deviceForm"].validate((valid) => {
+
+          if (!valid) {
+            console.log('error submit!!');
+            return false;
+          }
+
+          this.displayEditPanel = false;
+          modifyEntityInfo(this.selectedEntity).then(response => {
+            // console.info(this.selectedEntity);
+            this.queryEntites();
+          });
+          console.info('submit!');
+        })
+      },
+
+      // 地图相关
+      handlerMapInit,
+      getMapClickInfo,
+      handlerMapInitHouseDetail({
+        BMap,
+        map
+      }) {
+        handlerMapInit.call(this, {
+          BMap,
+          map
         });
+        this.map = map;
+        var top_left_control = new BMap.ScaleControl({
+          anchor: BMAP_ANCHOR_TOP_LEFT
+        }); // 左上角，添加比例尺
+        var top_left_navigation = new BMap.NavigationControl(); //左上角，添加默认缩放平移控件
+        var top_right_navigation = new BMap.NavigationControl({
+          anchor: BMAP_ANCHOR_TOP_RIGHT,
+          type: BMAP_NAVIGATION_CONTROL_SMALL
+        }); //右上角，仅包含平移和缩放按钮
+        map.addControl(top_left_control);
+        map.addControl(top_left_navigation);
+        map.addControl(top_right_navigation);
+
+        this.marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+
+        map.addEventListener("zoomend", ({
+          eventType,
+          target
+        }) => {
+          // console.info("After zoom, bounds:", target.getBounds())
+          this.queryEntites();
+        })
+        this.queryEntites();
       },
     },
     filters: {
       processSrc(src) {
         return require(src);
       },
+    },
+    watch: {
+      searchByRela() {
+        if (this.searchByRela) {
+          this.queryEntites();
+        }
+      }
     }
   }
 
@@ -309,6 +401,10 @@
 
   .device-table-container {
     padding: 10px 20px;
+
+    .bound-item:not(:first-child) {
+      margin-left: 20px;
+    }
 
     .image-checkbox-item {
       /deep/ .el-form-item__label {
@@ -339,6 +435,12 @@
         border-radius: 50%;
         background-color: #2ac845;
       }
+    }
+
+    .map-div {
+      width: 100%;
+      height: 300px;
+      margin: 5px 0px;
     }
 
     .table-container {

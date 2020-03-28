@@ -43,25 +43,25 @@ export const constantRoutes = [
     hidden: true
   },
 
+  // {
+  //   path: '/',
+  //   component: Layout,
+  //   redirect: '/dashboard',
+  //   children: [{
+  //     path: 'dashboard',
+  //     name: 'Dashboard',
+  //     component: () => import('@/views/dashboard/index'),
+  //     meta: { title: '看板', icon: 'dashboard' }
+  //   }]
+  // },
+
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: '看板', icon: 'dashboard' }
-    }]
-  },
-
-  {
-    path: '/device',
-    component: Layout,
     redirect: '/device/table',
     children: [{
-      path: 'table',
-      name: 'table',
+      path: '/device/table',
+      name: 'deviceTable',
       component: () => import('@/views/device/table'),
       meta: { title: '设备列表', icon: 'dashboard' }
     }]

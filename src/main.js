@@ -33,6 +33,11 @@ Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
 
+import BMap from 'vue-baidu-map'
+Vue.use(BMap, {
+	ak: 'VNKZ63YHZLY0B9jtOc7A76duTEDp5QAN'    //这个地方是官方提供的ak密钥
+})
+
 Vue.config.productionTip = false
 
 new Vue({
