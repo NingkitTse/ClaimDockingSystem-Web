@@ -58,12 +58,25 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/device/table',
+    redirect: '/searchDeviceByRela',
+    meta: { title: '设备详情信息', icon: 'example' },
+    name: 'deviceDetail',
     children: [{
-      path: '/device/table',
+      path: 'searchDeviceByRela',
+      name: 'searchDeviceByRela',
+      component: () => import('@/views/device/searchByRela/index'),
+      meta: { title: '通过组织关系查找设备', icon: 'dashboard' }
+    },{
+      path: 'searchDeviceByGis',
+      name: 'searchDeviceByGis',
+      component: () => import('@/views/device/searchByGis/index'),
+      meta: { title: '通过GIS查找设备', icon: 'dashboard' }
+    },{
+      path: 'deviceTable',
       name: 'deviceTable',
-      component: () => import('@/views/device/table'),
-      meta: { title: '设备列表', icon: 'dashboard' }
+      component: () => import('@/views/device/table/index'),
+      meta: { title: '设备列表', icon: 'dashboard' },
+      hidden: true
     }]
   },
 

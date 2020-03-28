@@ -6,6 +6,7 @@ const state = {
     supplyAdmins: [], // 所级
 
     center: {lng: 116, lat: 27.6},
+    bounds: {},
     radius: 1000,
 }
 
@@ -17,21 +18,22 @@ const mutations = {
     state.supplyCompanies = supplyCompanies;
     state.supplyAdmins = supplyAdmins;
   },
-  SET_GISINFO: (state, {center, radius}) => {
+  SET_GISINFO: (state, {center, radius, bounds}) => {
     state.center = center;
     state.radius = radius;
+    state.bounds = bounds;
   }
 }
 
 const actions = {
-  setSearchByReal({ commit }, searchByRela) {
+  setSearchByReal({ commit, dispatcher }, searchByRela) {
     commit('SET_SEARCHBYRELA', searchByRela);
   },
-  setSupplyRela({ commit }, {supplyCompanies, supplyAdmins}) {
+  setSupplyRela({ commit, dispatcher }, {supplyCompanies, supplyAdmins}) {
     commit('SET_SUPPLYRELA', {supplyCompanies, supplyAdmins});
   },
-  setSupplyRela({ commit }, {center, radius}) {
-    commit('SET_GISINFO', {center, radius});
+  setGisInfo({ commit, dispatcher }, {center, radius, bounds}) {
+    commit('SET_GISINFO', {center, radius, bounds});
   },
 }
 

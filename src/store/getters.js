@@ -11,5 +11,6 @@ const getters = {
   supplyAdmins: state => state.entity.supplyAdmins,
   center: state => state.entity.center,
   radius: state => state.entity.radius,
+  bounds: state => state.entity.bounds,
 }
 export default getters
