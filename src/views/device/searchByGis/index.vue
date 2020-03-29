@@ -1,6 +1,6 @@
 <template>
   <div class="search-by-gis">
-    <el-form ref="gisForm" class="gis-form" label-width="100px">
+    <el-form ref="gisForm" class="gis-form" :model="gisForm" :rules="gisFormRules" label-width="110px">
       <el-form-item label="边界信息" v-if="bounds">
         <div class="bound-item">
           界面西经： <span>{{ bounds.Zd || "" }}</span>
@@ -15,21 +15,21 @@
           界面南纬： <span>{{ bounds.Je || "" }}</span>
         </div>
       </el-form-item>
-      <el-form-item label="中心点经度(°)">
-        <el-input v-model="center.lng" placeholder="请输入中心点经度"></el-input>
+      <el-form-item label="中心点经度(°)" prop="lng">
+        <el-input v-model="gisForm.lng" type="text" placeholder="请输入中心点经度"></el-input>
       </el-form-item>
-      <el-form-item label="中心点纬度(°)">
-        <el-input v-model="center.lat" placeholder="请输入中心点纬度"></el-input>
+      <el-form-item label="中心点纬度(°)" prop="lat">
+        <el-input v-model="gisForm.lat" type="text" placeholder="请输入中心点纬度"></el-input>
       </el-form-item>
-      <el-form-item label="搜索半径(m)">
-        <el-input v-model="radius" type="number" placeholder="请输入搜索半径"></el-input>
+      <el-form-item label="搜索半径(km)" prop="radius">
+        <el-input v-model="gisForm.radius" type="text" placeholder="请输入搜索半径"></el-input>
       </el-form-item>
       <el-button-group class="btn-group">
         <el-button type="" @click="preStep()">上一步</el-button>
         <el-button type="success" @click="nextStep()">下一步</el-button>
       </el-button-group>
     </el-form>
-    <baidu-map class="map-div" :center="center" :zoom="zoom" @ready="handlerMapInitHouseDetail" @click="getMapClickInfo"
+    <baidu-map class="map-div" :center="gisForm" :zoom="zoom" @ready="handlerMapInitHouseDetail" @click="getMapClickInfo"
       :scroll-wheel-zoom='true'>
     </baidu-map>
   </div>
@@ -40,7 +40,12 @@
     handlerMapInit,
     getMapClickInfo,
     CircleOverlay
-  } from '@/utils/bMapUtil'
+  } from '@/utils/bMapUtil';
+  import {
+    lngValidator,
+    latValidator,
+    radiusValidator
+  } from '@/assets/rule/entityRule'
 
 
   const zoomArr = ["50", "100", "200", "500", "1000", "2000", "5000", "10000", "20000", "25000", "50000",
@@ -49,17 +54,28 @@
   ] //级别18到3;
   export default {
     data() {
+      
       return {
         zoom: 15,
         lastZoom: 15,
+        radius: 2,
+        bounds: {},
+        map: {},
+        circle: {},
         center: {
           lng: 111.67,
           lat: 27.7
         },
-        radius: 2000,
-        bounds: {},
-        map: {},
-        circle: {},
+        gisForm: {
+          lng: "111.67",
+          lat: "27.7",
+          radius: 2,
+        },
+        gisFormRules: {
+          radius: { validator: radiusValidator, trigger: 'change' },
+          lng: [{ required: true,  message: '请填写经度', trigger: 'change' },{ validator: lngValidator, trigger: 'change' }],
+          lat: [{ required: true,  message: '请填写纬度', trigger: 'change' },{ validator: latValidator, trigger: 'change' }],
+        }
       }
     },
     created() {
@@ -70,11 +86,18 @@
         this.$router.back(-1);
       },
       nextStep() {
-          let center = this.center;
-          let radius = this.radius;
-          let bounds = this.bounds;
-          this.$store.dispatch('entity/setGisInfo', {center, radius, bounds});
-          this.$router.push('./deviceTable')
+        this.$refs["gisForm"].validate((valid) => {
+          if (valid) {
+            let center = this.center;
+            let radius = this.gisForm.radius;
+            let bounds = this.bounds;
+            this.$store.dispatch('entity/setGisInfo', {center, radius, bounds});
+            this.$router.push('./deviceTable')
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
       },
       // 地图相关
       handlerMapInit,
@@ -117,7 +140,7 @@
           let lastScale = zoomArr[18 - lastZoom];
           let scale = zoomArr[18 - zoom];
 
-          this.radius = this.radius * scale / lastScale;
+          this.gisForm.radius = this.gisForm.radius * scale / lastScale;
           this.lastZoom = lastZoom;
           this.zoom = zoom;
         });
@@ -130,15 +153,20 @@
         }
         circle.setCenter(this.center);
         // console.info("lastScale: ", lastScale, "scale: ", scale, "radius: ", radius)
-        circle.setRadius(this.radius)
+        circle.setRadius(this.gisForm.radius * 1000)
       }
     },
     watch: {
-      radius() {
-        this.repaintCircle();
+      gisForm: {
+        handler(val, newVal) {
+          this.repaintCircle();
+        },
+        deep: true
       },
       center() {
-        this.repaintCircle();
+        this.gisForm.lng = this.center.lng + "";
+        this.gisForm.lat = this.center.lat + "";
+        // this.repaintCircle();
       },
       zoom() {
         this.repaintCircle();

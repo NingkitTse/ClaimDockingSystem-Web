@@ -5,18 +5,18 @@
       <el-form-item label="设备类型" v-if="bounds">
         <el-select v-model="form.deviceType" placeholder="选择设备类型">
           <el-option :label="'所有类型'" :value="''"></el-option>
-          <el-option v-for="type of deviceTypes" :label="type.label" :value="type.value"></el-option>
+          <el-option v-for="type of deviceTypes" :label="type.label" :key="type.value" :value="type.value"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="使用环境">
         <el-radio-group v-model="form.useEnv">
           <el-radio-button :label="''">所有环境</el-radio-button>
-          <el-radio-button :label="useEnv.value" v-for="useEnv of useEnvs">{{ useEnv.label }}</el-radio-button>
+          <el-radio-button :label="useEnv.value" v-for="useEnv of useEnvs" :key="useEnv.value">{{ useEnv.label }}</el-radio-button>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="功能">
+      <!-- <el-form-item label="功能">
         <el-button type="" @click="queryEntites()">重新查询</el-button>
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
     <div class="table-container">
       <el-table @selection-change="handleSelectionChange" v-loading="listLoading" :data="list"
@@ -77,7 +77,7 @@
             <el-input v-else-if="getEntityType(key) == 'dept'" type="text" :disabled="true"
               v-model="selectedEntity[key + 'Name']" />
             <el-select v-else-if="getEntityType(key) == 'deviceType'" v-model="selectedEntity[key]" placeholder="选择设备类型">
-              <el-option v-for="type of deviceTypes" :label="type.label" :value="type.value"></el-option>
+              <el-option v-for="type of deviceTypes" :label="type.label" :key="type.value" :value="type.value"></el-option>
             </el-select>
             <div v-else class="block">
               <el-date-picker v-model="selectedEntity[key]" type="datetime" placeholder="选择日期时间" align="right"
@@ -237,7 +237,7 @@
           getEntityInfos(param).then(resp => this.processEntityInfos(resp));
         } else {
           Object.assign(param, {bounds: this.bounds}, this.center, {
-            radius: this.radius
+            radius: this.radius * 1000
           });
           getEntityInfosByGis(param).then(resp => this.processEntityInfos(resp));
         }

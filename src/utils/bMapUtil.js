@@ -8,7 +8,7 @@ export function handlerMapInit({
     
     var marker = this.marker = new BMap.Marker(point) // 创建标注
     map.addOverlay(marker) // 将标注添加到地图中
-    var circle = this.circle = new BMap.Circle(point, this.radius, {
+    var circle = this.circle = new BMap.Circle(point, this.radius * 1000, {
         strokeColor: 'rgba(0, 128, 0, 0.2)',
         strokeWeight: 6,
         strokeOpacity: 0.2,
@@ -24,14 +24,13 @@ export function getMapClickInfo(e) {
     // this.center.lng = e.point.lng
     // this.center.lat = e.point.lat
 
-    this.marker && this.map.removeOverlay(this.marker);
     // console.info(this.map.getBounds())
-
+    
     var point = new BMap.Point(e.point.lng, e.point.lat);
     this.center = {lng: e.point.lng, lat: e.point.lat};
     // this.map.remove(this.marker);
+    this.marker && this.map.removeOverlay(this.marker);
     var marker = this.marker = new BMap.Marker(point);
     this.map.addOverlay(marker);
-
     this.bounds = this.map.getBounds();
 }
