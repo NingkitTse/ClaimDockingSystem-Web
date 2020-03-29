@@ -58,10 +58,15 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/searchDeviceByRela',
+    redirect: '/deviceDetail',
     meta: { title: '设备详情信息', icon: 'example' },
     name: 'deviceDetail',
     children: [{
+      path: 'deviceDetail',
+      name: 'deviceDetail',
+      component: () => import('@/views/device/index'),
+      meta: { title: '设备详情信息', icon: 'dashboard' }
+    },{
       path: 'searchDeviceByRela',
       name: 'searchDeviceByRela',
       component: () => import('@/views/device/searchByRela/index'),

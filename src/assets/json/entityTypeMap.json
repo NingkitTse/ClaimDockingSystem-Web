@@ -1,12 +1,12 @@
 {
-    "ownDept": "text",
-    "ownTransStation": "text",
+    "ownDept": "dept",
+    "ownTransStation": "dept",
     "voltageLevel": "text",
     "assetNo": "text",
     "deviceNo": "text",
     "manufacturer": "text",
     "putIntoDate": "time",
-    "serviceEnv": "text",
+    "serviceEnv": "serviceEnv",
     "longitude": "lng",
     "latitude": "lat",
     "assetValue": "text",
@@ -42,5 +42,6 @@
     "cxSurveyTel": "tel",
     "insuranceSurvey": "text",
     "insuranceSurveyTel": "tel",
-    "reserved": "text"
+    "reserved": "text",
+    "deviceType": "deviceType"
 }

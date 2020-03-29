@@ -24,9 +24,10 @@
       <el-form-item label="搜索半径(m)">
         <el-input v-model="radius" type="number" placeholder="请输入搜索半径"></el-input>
       </el-form-item>
-      <el-form-item>
+      <el-button-group class="btn-group">
+        <el-button type="" @click="preStep()">上一步</el-button>
         <el-button type="success" @click="nextStep()">下一步</el-button>
-      </el-form-item>
+      </el-button-group>
     </el-form>
     <baidu-map class="map-div" :center="center" :zoom="zoom" @ready="handlerMapInitHouseDetail" @click="getMapClickInfo"
       :scroll-wheel-zoom='true'>
@@ -65,6 +66,9 @@
       this.$store.dispatch('entity/setSearchByReal', false);
     },
     methods: {
+      preStep() {
+        this.$router.back(-1);
+      },
       nextStep() {
           let center = this.center;
           let radius = this.radius;
@@ -130,6 +134,9 @@
       }
     },
     watch: {
+      radius() {
+        this.repaintCircle();
+      },
       center() {
         this.repaintCircle();
       },
@@ -143,6 +150,10 @@
 <style lang="scss" scoped>
   .search-by-gis {
     display: flex;
+
+    .btn-group {
+      margin-left: 20px;
+    }
 
     .gis-form {
       padding: 10px;

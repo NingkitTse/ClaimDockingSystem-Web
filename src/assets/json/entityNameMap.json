@@ -42,5 +42,6 @@
     "cxSurveyTel": "出险公司查勘人电话",
     "insuranceSurvey": "保险公司查勘人",
     "insuranceSurveyTel": "保险公司查勘人电话",
-    "reserved": "其他有用的数据字段"
+    "reserved": "其他有用的数据字段",
+    "deviceType": "设备类型"
 }

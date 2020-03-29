@@ -7,10 +7,14 @@ const getters = {
   title: state => state.settings.title,
   backEndBaseUrl: state => state.settings.backEndBaseUrl,
   searchByRela: state => state.entity.searchByRela,
-  supplyCompanies: state => state.entity.supplyCompanies,
-  supplyAdmins: state => state.entity.supplyAdmins,
+  powerSupplyCompany: state => state.entity.powerSupplyCompany,
+  powerSupplyAdmin: state => state.entity.powerSupplyAdmin,
   center: state => state.entity.center,
   radius: state => state.entity.radius,
   bounds: state => state.entity.bounds,
+  deviceTypes: state => state.dict.deviceTypes,
+  useEnvs: state => state.dict.useEnvs,
+  deptMap: state => state.dict.deptMap,
+  childDeptMap: state => state.dict.childDeptMap,
 }
 export default getters

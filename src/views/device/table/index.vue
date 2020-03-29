@@ -3,23 +3,15 @@
     <el-button @click="goBackStep()" class="goBackStep">返回上一步</el-button>
     <el-form ref="form" class="form" label-width="100px">
       <el-form-item label="设备类型" v-if="bounds">
-        <el-dropdown>
-          <el-button type="primary">
-            选择设备类型<i class="el-icon-arrow-down el-icon--right"></i>
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>设备类型1</el-dropdown-item>
-            <el-dropdown-item>设备类型2</el-dropdown-item>
-            <el-dropdown-item>设备类型3</el-dropdown-item>
-            <el-dropdown-item>设备类型4</el-dropdown-item>
-            <el-dropdown-item>设备类型5</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+        <el-select v-model="form.deviceType" placeholder="选择设备类型">
+          <el-option :label="'所有类型'" :value="''"></el-option>
+          <el-option v-for="type of deviceTypes" :label="type.label" :value="type.value"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="使用环境">
         <el-radio-group v-model="form.useEnv">
-          <el-radio-button label="室内"></el-radio-button>
-          <el-radio-button label="室外"></el-radio-button>
+          <el-radio-button :label="''">所有环境</el-radio-button>
+          <el-radio-button :label="useEnv.value" v-for="useEnv of useEnvs">{{ useEnv.label }}</el-radio-button>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="功能">
@@ -49,7 +41,10 @@
         </el-table-column>
         <el-table-column :label="value" resizable v-for="(value, key) of entityNameMap" :key="key" min-width="95">
           <template slot-scope="scope">
-            {{ scope.row[key] }}
+            <span v-if="getEntityType(key) == 'dept'">
+              {{ getDeptName(key, scope.row) }}
+            </span>
+            <span v-else>{{ scope.row[key] }}</span>
           </template>
         </el-table-column>
         <el-table-column min-width="95" fixed="right" :label="'操作'">
@@ -69,7 +64,7 @@
 
     <el-dialog title="编辑设备详情" :visible.sync="displayEditPanel" width="30%" :before-close="handleClose">
       <article>
-        <el-form ref="deviceForm" :rules="entityRule" :model="selectedEntity" label-width="100px">
+        <el-form class="deviceForm" ref="deviceForm" :rules="entityRule" :model="selectedEntity" label-width="100px">
           <el-form-item v-for="(value, key) of entityNameMap" :key="key" :prop="key" class="image-checkbox-item"
             :label="value">
             <el-input v-if="getEntityType(key) == 'text'" v-model="selectedEntity[key]" />
@@ -78,7 +73,12 @@
             <el-input v-else-if="getEntityType(key) == 'lat'" type="number" :max="90" :min="-90"
               v-model="selectedEntity[key]" />
             <el-input v-else-if="getEntityType(key) == 'tel'" type="tel" :max="90" :min="-90"
-              v-model="selectedEntity[key]" />
+              v-model="selectedEntity[key + 'Name']" />
+            <el-input v-else-if="getEntityType(key) == 'dept'" type="text" :disabled="true"
+              v-model="selectedEntity[key + 'Name']" />
+            <el-select v-else-if="getEntityType(key) == 'deviceType'" v-model="selectedEntity[key]" placeholder="选择设备类型">
+              <el-option v-for="type of deviceTypes" :label="type.label" :value="type.value"></el-option>
+            </el-select>
             <div v-else class="block">
               <el-date-picker v-model="selectedEntity[key]" type="datetime" placeholder="选择日期时间" align="right"
                 :picker-options="pickerOptions">
@@ -136,7 +136,7 @@
         selectedEntity: entityNameMap,
         form: {
           deviceType: "",
-          useEnv: "室内",
+          useEnv: "",
         },
         multipleSelection: [],
         list: null,
@@ -169,6 +169,8 @@
           }]
         },
         uploadFileList: [],
+        deviceTypes: [],
+        useEnvs: [],
       }
     },
 
@@ -177,7 +179,16 @@
       this.radius = this.$store.getters["radius"];
       this.bounds = this.$store.getters["bounds"];
       this.searchByRela = this.$store.getters["searchByRela"];
-
+      this.powerSupplyCompany = this.$store.getters["powerSupplyCompany"];
+      this.powerSupplyAdmin = this.$store.getters["powerSupplyAdmin"];
+      this.$store.dispatch("dict/getDeviceType").then(res => {
+        this.deviceTypes = this.$store.getters["deviceTypes"];
+        // console.info(this.deviceTypes)
+      });
+      this.$store.dispatch("dict/getUseEnv").then(res => {
+        this.useEnvs = this.$store.getters["useEnvs"];
+        // console.info(this.deviceTypes)
+      });
       this.queryEntites();
     },
     methods: {
@@ -214,19 +225,18 @@
       },
       async queryEntites() {
         this.listLoading = true;
-        if (this.searchByRela) {
-          let param = {
+        let param = Object.assign({
             current: this.current,
             size: this.pageSize,
+          }, this.form);
+        if (this.searchByRela) {
+          Object.assign(param, {
             ownDept: this.powerSupplyCompany,
             ownTransStation: this.powerSupplyAdmin
-          }
+          });
           getEntityInfos(param).then(resp => this.processEntityInfos(resp));
         } else {
-          let param = Object.assign({}, this.bounds, {
-            current: this.current,
-            size: this.pageSize,
-          }, this.center, {
+          Object.assign(param, {bounds: this.bounds}, this.center, {
             radius: this.radius
           });
           getEntityInfosByGis(param).then(resp => this.processEntityInfos(resp));
@@ -298,6 +308,23 @@
             this.queryEntites();
           });
         })
+      },
+      getDeptName(key, row) {
+        return row[`${key}Name`];
+      }
+    },
+    filters: {
+      
+    },
+    // computed: {
+    //   ...mapGetters['deviceTypes']
+    // }
+    watch: {
+      form: {
+        handler(val, oldVal) {
+          this.queryEntites();
+        },
+        deep: true
       }
     }
   }
@@ -315,9 +342,6 @@
     .bound-item:not(:first-child) {
       margin-left: 20px;
     }
-
-
-
     .table-container {
       // margin-left: 80px;
 
@@ -334,6 +358,13 @@
         .icon {
           cursor: pointer;
         }
+      }
+    }
+
+    .deviceForm {
+      /deep/ .el-form-item__label {
+        height: 40px;
+        line-height: 20px;
       }
     }
   }
