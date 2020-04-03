@@ -18,12 +18,12 @@
       </el-form-item> -->
       <el-form-item label="地级市">
         <el-select v-model="form.powerSupplyCompany" placeholder="选择地级市" @change="onchangeCompany()">
-          <el-option v-for="supplyCompany of supplyCompanies" :label="supplyCompany.orgName" :value="supplyCompany.postcode"></el-option>
+          <el-option v-for="supplyCompany of supplyCompanies" :key="supplyCompany.postcode" :label="supplyCompany.orgName" :value="supplyCompany.postcode"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="变电所">
         <el-select v-if="form.powerSupplyCompany" v-model="form.powerSupplyAdmin" placeholder="选择变电所">
-          <el-option v-for="supplyAdmin of supplyAdmins" :label="supplyAdmin.orgName" :value="supplyAdmin.postcode"></el-option>
+          <el-option v-for="supplyAdmin of supplyAdmins" :key="supplyAdmin.postcode" :label="supplyAdmin.orgName" :value="supplyAdmin.postcode"></el-option>
         </el-select>
         <span v-else>请先选择地级市</span>
       </el-form-item>

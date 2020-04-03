@@ -36,7 +36,10 @@ Vue.use(ElementUI, { locale })
 import BMap from 'vue-baidu-map'
 Vue.use(BMap, {
 	ak: 'VNKZ63YHZLY0B9jtOc7A76duTEDp5QAN'    //这个地方是官方提供的ak密钥
-})
+});
+
+import VueResource from 'vue-resource'
+Vue.use(VueResource)
 
 Vue.config.productionTip = false
 

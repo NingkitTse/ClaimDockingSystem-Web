@@ -1,0 +1,17 @@
+{"type": "FeatureCollection", "features": [
+
+
+
+{ "type": "Feature", "properties": { "PROVNAME": "湖南省", "CITYNAME": "怀化市", "COUNNAME":"辰溪县", "name":"辰溪供电城区"}, "geometry": { "type": "Polygon", "coordinates": [[[110.199632, 28.010025],[110.219632, 28.015025],[110.229632, 28.000025],[110.219632, 27.990025],[110.199632, 28.000025]]] } }
+
+
+
+
+
+
+
+]
+
+
+
+}

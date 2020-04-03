@@ -15,7 +15,7 @@ export function getDeptListByParentPostcode({parentPostcode}) {
   // console.log(param)
   // debugger
   return request({
-    url: `/dept/infos/${parentPostcode}`,
+    url: `/dept/infos/child/${parentPostcode}`,
     method: 'get',
   })
 }
@@ -24,5 +24,12 @@ export function getDeptList() {
   return request({
     url: `/dept/infos`,
     method: 'get',
+  })
+}
+
+export function getDeptInfo(postcode) {
+  return request({
+    url: `/dept/info/${postcode}`,
+    method: "get"
   })
 }

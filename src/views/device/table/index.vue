@@ -72,7 +72,10 @@
               v-model="selectedEntity[key]" />
             <el-input v-else-if="getEntityType(key) == 'lat'" type="number" :max="90" :min="-90"
               v-model="selectedEntity[key]" />
-            <el-input v-else-if="getEntityType(key) == 'tel'" type="tel" :max="90" :min="-90"
+            <el-radio-group v-else-if="getEntityType(key) == 'serviceEnv'" v-model="selectedEntity[key]">
+              <el-radio-button :label="useEnv.value" v-for="useEnv of useEnvs" :key="useEnv.value">{{ useEnv.label }}</el-radio-button>
+            </el-radio-group>
+            <el-input v-else-if="getEntityType(key) == 'tel'" type="tel" 
               v-model="selectedEntity[key + 'Name']" />
             <el-input v-else-if="getEntityType(key) == 'dept'" type="text" :disabled="true"
               v-model="selectedEntity[key + 'Name']" />
@@ -229,18 +232,18 @@
             current: this.current,
             size: this.pageSize,
           }, this.form);
-        if (this.searchByRela) {
+        // if (this.searchByRela) {
           Object.assign(param, {
             ownDept: this.powerSupplyCompany,
             ownTransStation: this.powerSupplyAdmin
           });
           getEntityInfos(param).then(resp => this.processEntityInfos(resp));
-        } else {
-          Object.assign(param, {bounds: this.bounds}, this.center, {
-            radius: this.radius * 1000
-          });
-          getEntityInfosByGis(param).then(resp => this.processEntityInfos(resp));
-        }
+        // } else {
+        //   Object.assign(param, {bounds: this.bounds}, this.center, {
+        //     radius: this.radius * 1000
+        //   });
+        //   getEntityInfosByGis(param).then(resp => this.processEntityInfos(resp));
+        // }
       },
       getEntityType(key) {
         return entityTypeMap[key] || "text";
