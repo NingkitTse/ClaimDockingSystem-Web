@@ -44,6 +44,12 @@
             <span v-if="getEntityType(key) == 'dept'">
               {{ getDeptName(key, scope.row) }}
             </span>
+            <span v-else-if="getEntityType(key) == 'serviceEnv'">
+              {{ getDictLabel('useEnvs', scope.row[key]) }}
+            </span>
+            <span v-else-if="getEntityType(key) == 'deviceType'">
+              {{ getDictLabel('deviceTypes', scope.row[key]) }}
+            </span>
             <span v-else>{{ scope.row[key] }}</span>
           </template>
         </el-table-column>
@@ -131,6 +137,7 @@
     mapGetters
   } from "vuex"
 
+  let vm = {};
   export default {
     data() {
       return {
@@ -178,6 +185,7 @@
     },
 
     created() {
+      vm = this;
       this.center = this.$store.getters["center"];
       this.radius = this.$store.getters["radius"];
       this.bounds = this.$store.getters["bounds"];
@@ -314,6 +322,14 @@
       },
       getDeptName(key, row) {
         return row[`${key}Name`];
+      },
+      getDictLabel(dictName, val) {
+        for (let dictItem of this[dictName]) {
+          if (val == dictItem.value) {
+            return dictItem.label;
+          }
+        }
+        return val;
       }
     },
     filters: {

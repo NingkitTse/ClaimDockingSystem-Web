@@ -34,7 +34,18 @@
       vm = this;
       let topPostcode = 430000;
       this.mapContainer = document.getElementById("map-container");
+
+      // 如果是从table界面过来，加上上一次的选项
+      let currentOrgNoObjStr = sessionStorage.getItem("current_org_no");
+      if (currentOrgNoObjStr) {
+        let obj = JSON.parse(currentOrgNoObjStr);
+        if (obj && obj.postcode) {
+          this.loadMap(obj.postcode);
+          return;
+        }
+      }
       this.loadMap(topPostcode);
+      
     },
     methods: {
       loadMap(postcode) {
