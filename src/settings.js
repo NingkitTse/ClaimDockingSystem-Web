@@ -8,7 +8,7 @@ switch (process.env.NODE_ENV) {
     url = "http://127.0.0.1:8080/power";
     break;
   case 'staging':
-    url = "http://115.157.192.61:8328/power"
+    url = "http://49.123.105.10:8328/power"
     break;
   case 'development':
     url = "http://127.0.0.1:8080/power";
