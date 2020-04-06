@@ -14,6 +14,8 @@
 <script>
   export default {
     created() {
+      // 重新选择时，清除上一次记录的gis地图
+      sessionStorage.removeItem("current_org_no");
     },
     methods: {
         searchByRela() {
