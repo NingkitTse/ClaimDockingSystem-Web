@@ -82,7 +82,7 @@
               <el-radio-button :label="useEnv.value" v-for="useEnv of useEnvs" :key="useEnv.value">{{ useEnv.label }}</el-radio-button>
             </el-radio-group>
             <el-input v-else-if="getEntityType(key) == 'tel'" type="tel" 
-              v-model="selectedEntity[key + 'Name']" />
+               v-model="selectedEntity[key]" />
             <el-input v-else-if="getEntityType(key) == 'dept'" type="text" :disabled="true"
               v-model="selectedEntity[key + 'Name']" />
             <el-select v-else-if="getEntityType(key) == 'deviceType'" v-model="selectedEntity[key]" placeholder="选择设备类型">
