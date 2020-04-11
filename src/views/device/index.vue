@@ -20,8 +20,13 @@
         </span>
       </p>
       <p v-else>
+        <span class="success">成功数量： {{successNum}}</span>&nbsp;&nbsp;
+        <span class="danger">失败数量： {{failNum}}</span>&nbsp;&nbsp;
+        <span>总数: {{total}}</span>
         <el-table :data="uploadEntities" style="width: 100%" height="450">
-          <el-table-column prop="entityId" label="EntityId" width="350">
+          <el-table-column prop="entityId" label="设备ID" width="350">
+          </el-table-column>
+          <el-table-column prop="entityName" label="设备名称" width="150">
           </el-table-column>
           <el-table-column prop="longitude" label="经度">
           </el-table-column>
@@ -163,13 +168,13 @@
         this.notifyType = json.notifyType;
         switch (json.notifyType) {
           case "SINGLE_PROCESS":
-            this.uploadMsg = `正在处理${notifyInfo.entityId}`
+            this.uploadMsg = `正在处理${notifyInfo.entityId}, ${notifyInfo.entityName}`
             break;
           case "SINGLE_SUCCESS":
-            this.uploadMsg = `${notifyInfo.entityId}, 处理成功`
+            this.uploadMsg = `${notifyInfo.entityId}, ${notifyInfo.entityName}, 处理成功`
             break;
           case "SINGLE_FAILED":
-            this.uploadMsg = `${notifyInfo.entityId}, 处理失败, 原因：${json.msg}`
+            this.uploadMsg = `${notifyInfo.entityId}, ${notifyInfo.entityName}, 处理失败, 原因：${json.msg}`
             break;
           case "SUCCEED":
             this.uploadComplete = true;
@@ -216,8 +221,13 @@
       margin-top: 10px;
     }
 
-    span.danger {
-      color: red;
+    span {
+      &.danger {
+        color: #F56C6C;
+      }
+      &.success {
+        color: #67C23A;
+      }
     }
   }
 </style>

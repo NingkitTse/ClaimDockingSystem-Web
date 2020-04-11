@@ -11,7 +11,7 @@ switch (process.env.NODE_ENV) {
     break;
   case 'staging':
     url = "http://49.123.105.10:8328/power"
-    webSocketUrl = "ws://127.0.0.1:8328/power/imserver";
+    webSocketUrl = "ws://49.123.105.10:8328/power/imserver";
     break;
   case 'development':
     url = "http://127.0.0.1:8080/power";
