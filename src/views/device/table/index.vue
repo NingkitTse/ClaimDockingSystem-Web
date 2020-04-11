@@ -14,9 +14,10 @@
           <el-radio-button :label="useEnv.value" v-for="useEnv of useEnvs" :key="useEnv.value">{{ useEnv.label }}</el-radio-button>
         </el-radio-group>
       </el-form-item>
-      <!-- <el-form-item label="功能">
-        <el-button type="" @click="queryEntites()">重新查询</el-button>
-      </el-form-item> -->
+      <el-form-item label="功能">
+        <!-- <el-button type="" @click="queryEntites()">重新查询</el-button> -->
+        <el-button type="" @click="exportSelection()">导出选中数据</el-button>
+      </el-form-item>
     </el-form>
     <div class="table-container">
       <el-table @selection-change="handleSelectionChange" v-loading="listLoading" :data="list"
@@ -73,23 +74,23 @@
         <el-form class="deviceForm" ref="deviceForm" :rules="entityRule" :model="selectedEntity" label-width="100px">
           <el-form-item v-for="(value, key) of entityNameMap" :key="key" :prop="key" class="image-checkbox-item"
             :label="value">
-            <el-input v-if="getEntityType(key) == 'text'" v-model="selectedEntity[key]" />
-            <el-input v-else-if="getEntityType(key) == 'lng'" type="number" :max="180" :min="-180"
+            <el-input disabled v-if="getEntityType(key) == 'text'" v-model="selectedEntity[key]" />
+            <el-input disabled v-else-if="getEntityType(key) == 'lng'" type="number" :max="180" :min="-180"
               v-model="selectedEntity[key]" />
-            <el-input v-else-if="getEntityType(key) == 'lat'" type="number" :max="90" :min="-90"
+            <el-input disabled v-else-if="getEntityType(key) == 'lat'" type="number" :max="90" :min="-90"
               v-model="selectedEntity[key]" />
-            <el-radio-group v-else-if="getEntityType(key) == 'serviceEnv'" v-model="selectedEntity[key]">
+            <el-radio-group disabled v-else-if="getEntityType(key) == 'serviceEnv'" v-model="selectedEntity[key]">
               <el-radio-button :label="useEnv.value" v-for="useEnv of useEnvs" :key="useEnv.value">{{ useEnv.label }}</el-radio-button>
             </el-radio-group>
-            <el-input v-else-if="getEntityType(key) == 'tel'" type="tel" 
+            <el-input disabled v-else-if="getEntityType(key) == 'tel'" type="tel" 
                v-model="selectedEntity[key]" />
-            <el-input v-else-if="getEntityType(key) == 'dept'" type="text" :disabled="true"
+            <el-input disabled v-else-if="getEntityType(key) == 'dept'" type="text"
               v-model="selectedEntity[key + 'Name']" />
-            <el-select v-else-if="getEntityType(key) == 'deviceType'" v-model="selectedEntity[key]" placeholder="选择设备类型">
+            <el-select disabled v-else-if="getEntityType(key) == 'deviceType'" v-model="selectedEntity[key]" placeholder="选择设备类型">
               <el-option v-for="type of deviceTypes" :label="type.label" :key="type.value" :value="type.value"></el-option>
             </el-select>
             <div v-else class="block">
-              <el-date-picker v-model="selectedEntity[key]" type="datetime" placeholder="选择日期时间" align="right"
+              <el-date-picker disabled v-model="selectedEntity[key]" type="datetime" placeholder="选择日期时间" align="right"
                 :picker-options="pickerOptions">
               </el-date-picker>
             </div>
@@ -97,8 +98,8 @@
           <el-upload class="upload-demo" :action="backEndBaseUrl + '/device-img/info'" :on-preview="handlePreview"
             :on-remove="handleRemove" :before-remove="beforeRemove" multiple :limit="3" :on-exceed="handleExceed"
             :file-list="uploadFileList" list-type="picture" :data="selectedEntity" :headers="{'X-Token': getToken()}">
-            <el-button size="small" type="primary">点击上传</el-button>
-            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            <!-- <el-button size="small" type="primary">点击上传</el-button> -->
+            <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
           </el-upload>
         </el-form>
       </article>
@@ -306,19 +307,20 @@
       },
 
       submitEdit() {
-        this.$refs["deviceForm"].validate((valid) => {
+        this.displayEditPanel = false;
+        // this.$refs["deviceForm"].validate((valid) => {
 
-          if (!valid) {
-            console.log('error submit!!');
-            return false;
-          }
+        //   if (!valid) {
+        //     console.log('error submit!!');
+        //     return false;
+        //   }
 
-          this.displayEditPanel = false;
-          modifyEntityInfo(this.selectedEntity).then(response => {
-            // console.info(this.selectedEntity);
-            this.queryEntites();
-          });
-        })
+        //   this.displayEditPanel = false;
+        //   modifyEntityInfo(this.selectedEntity).then(response => {
+        //     // console.info(this.selectedEntity);
+        //     this.queryEntites();
+        //   });
+        // })
       },
       getDeptName(key, row) {
         return row[`${key}Name`];

@@ -65,7 +65,7 @@ export const constantRoutes = [
       path: 'deviceDetail',
       name: 'deviceDetail',
       component: () => import('@/views/device/index'),
-      meta: { title: '设备详情信息', icon: 'dashboard' }
+      meta: { title: '设备信息补充', icon: 'dashboard' }
     },{
       path: 'searchDeviceByRela',
       name: 'searchDeviceByRela',

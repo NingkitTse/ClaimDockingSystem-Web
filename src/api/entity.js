@@ -32,3 +32,13 @@ export function getEntityInfosByGis(data) {
     data,
   })
 }
+
+export function uploadGisInfo(data) {
+  return request({
+    url: '/entity/uploadGisInfo',
+    method: 'post',
+    headers: {
+    },
+    data,
+  })
+}

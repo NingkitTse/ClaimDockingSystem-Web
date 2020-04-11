@@ -1,4 +1,5 @@
 let url = '';
+let webSocketUrl = '';
 console.info(process.env.NODE_ENV)
 switch (process.env.NODE_ENV) {
   case 'mock': 
@@ -6,12 +7,15 @@ switch (process.env.NODE_ENV) {
     break;
   case 'production':
     url = "http://127.0.0.1:8080/power";
+    webSocketUrl = "ws://127.0.0.1:8080/power/imserver";
     break;
   case 'staging':
     url = "http://49.123.105.10:8328/power"
+    webSocketUrl = "ws://127.0.0.1:8328/power/imserver";
     break;
   case 'development':
     url = "http://127.0.0.1:8080/power";
+    webSocketUrl = "ws://127.0.0.1:8080/power/imserver";
     break;
 }
 
@@ -32,4 +36,6 @@ module.exports = {
   sidebarLogo: false,
 
   backEndBaseUrl: url,
+
+  webSocketUrl: webSocketUrl
 }
