@@ -6,8 +6,8 @@ switch (process.env.NODE_ENV) {
     url = `${process.env.VUE_APP_BASE_WEB_URL}:${process.env.VUE_APP_BASE_WEB_PORT}`
     break;
   case 'production':
-    url = "http://127.0.0.1:8080/power";
-    webSocketUrl = "ws://127.0.0.1:8080/power/imserver";
+    url = "http://218.244.150.51/:8080/power";
+    webSocketUrl = "ws://218.244.150.51:8080/power/imserver";
     break;
   case 'staging':
     url = "http://49.123.105.10:8328/power"

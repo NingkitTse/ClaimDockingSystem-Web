@@ -74,7 +74,7 @@ export const constantRoutes = [
     },{
       path: 'searchDeviceByGis',
       name: 'searchDeviceByGis',
-      component: () => import('@/views/device/searchByGis/echartsMap'),
+      component: () => import('@/views/device/searchByGis/echartsMap.vue'),
       meta: { title: '通过GIS查找设备', icon: 'dashboard' }
     },{
       path: 'deviceTable',

@@ -73,8 +73,8 @@
       this.powerSupplyAdmin = this.$store.getters["powerSupplyAdmin"];
       
       this.$store.dispatch('entity/setSearchByReal', true);
-      this.$store.dispatch('dict/addDepts', {parentPostcode: "431300"}).then(res => {
-        this.supplyCompanies = this.$store.getters["childDeptMap"].get("431300");
+      this.$store.dispatch('dict/addDepts', {parentPostcode: "CODE"}).then(res => {
+        this.supplyCompanies = this.$store.getters["childDeptMap"].get("CODE");
       });
     },
     methods: {

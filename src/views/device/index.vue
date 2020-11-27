@@ -42,7 +42,7 @@
         </el-table>
       </p>
       <el-upload class="upload-demo" ref="upload" :action="backEndBaseUrl + '/entity/uploadGisInfo'"
-        :on-preview="handlePreview" :limit="1" :on-remove="handleRemove" :file-list="fileList" :auto-upload="false"
+        :on-preview="handlePreview" :on-success="handleSuccess" :on-error="handleError" :limit="1" :on-remove="handleRemove" :file-list="fileList" :auto-upload="false"
         :headers="{'X-Token': getToken()}" accept=".xls">
         <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
         <el-button style="margin-left: 10px;" :disabled="disableUpload" size="small" type="success"
@@ -70,6 +70,7 @@
   import {
     uploadGisInfo
   } from '@/api/entity'
+  import { Message } from 'element-ui'
 
   export default {
     data() {
@@ -123,8 +124,17 @@
       handlePreview(file) {
         
       },
+      handleSuccess(e) {
+        if (e.code == 0) {
+          Message.error(e.msg);
+          this.showUploadPanel();
+        }
+      },
+      handleError(e) {
+        Message.error(e.msg);
+      },
       handleExceed(files, fileList) {
-        this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+        Message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
       },
       searchByRela() {
         this.$router.push("./searchDeviceByRela")
