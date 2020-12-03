@@ -2,10 +2,13 @@
   <div class="device-table-container">
     <el-button @click="goBackStep()" class="goBackStep">返回上一步</el-button>
     <el-form ref="form" class="form" label-width="100px">
+      <el-form-item label="设备ID">
+        <el-input v-model="form.entityId" placeholder="请输入设备ID" />
+      </el-form-item>
       <el-form-item label="设备类型" v-if="bounds">
         <el-select v-model="form.deviceType" placeholder="选择设备类型">
           <el-option :label="'所有类型'" :value="''"></el-option>
-          <el-option v-for="type of deviceTypes" :label="type.label" :key="type.value" :value="type.value"></el-option>
+          <el-option v-for="deviceType of deviceTypes" :label="deviceType.label" :key="deviceType.value" :value="deviceType.value"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="使用环境">
@@ -24,11 +27,12 @@
         element-loading-text="Loading" border fit highlight-current-row>
         <el-table-column type="selection" width="55">
         </el-table-column>
-        <el-table-column fixed align="center" label="ID" width="95">
+        <el-table-column fixed align="center" label="No" width="95">
           <template slot-scope="scope">
             {{ scope.$index + 1 }}
           </template>
         </el-table-column>
+        <el-table-column fixed align="center" label="实体ID" prop="entityId" width="180" />
         <el-table-column fixed align="center" label="资产名称" width="95">
           <template slot-scope="scope">
             {{ scope.row.assetName }}
@@ -62,7 +66,7 @@
         </el-table-column>
       </el-table>
       <div class="footer">
-        <el-pagination background layout=" total" :total="total" :page-size="pageSize" :current-page="current"
+        <el-pagination background layout="total, sizes, prev, pager, next" :total="total" :page-size="pageSize" :current-page="current"
           :pager-count="11" :page-sizes="[10, 20, 50, 100, 200]" @size-change="handleSizeChange"
           @current-change="handleCurrentChange">
         </el-pagination>
@@ -148,12 +152,13 @@
         form: {
           deviceType: "",
           useEnv: "",
+          entityId: ""
         },
         multipleSelection: [],
         list: null,
         current: 1,
         total: 10,
-        pageSize: 100000,
+        pageSize: 20,
         listLoading: true,
         entityNameMap,
         displayEditPanel: false,

@@ -15,6 +15,9 @@ const mutations = {
     state.useEnvs = useEnvs
   },
   ADD_CHILD_DEPT_LIST(state, {key, depts}) {
+    if (!(state.childDeptMap instanceof Map)) {
+      state.childDeptMap = new Map();
+    }
     state.childDeptMap.set(key, depts);
   },
   SET_DEPT_MAP(state, {depts}) {

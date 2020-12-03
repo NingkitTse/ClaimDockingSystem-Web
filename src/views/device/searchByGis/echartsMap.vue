@@ -63,7 +63,7 @@
               this.orgMap.set(child.postcode, child);
             }
           }
-          this.$http.get(`static/${currentOrg.resPath}`).then(data => {
+          this.$http.get(`${currentOrg.resPath}`).then(data => {
             data = data.data;
             let markdata = this.convertData(data.features);
             this.createMap(data, markdata);
