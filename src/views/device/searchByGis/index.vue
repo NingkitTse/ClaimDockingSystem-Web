@@ -66,12 +66,12 @@ export default {
       map: {},
       circle: {},
       center: {
-        lng: 111.67,
-        lat: 27.7
+        lng: 112.008497,
+        lat: 27.728136
       },
       gisForm: {
-        lng: '111.67',
-        lat: '27.7',
+        lng: 112.008497,
+        lat: 27.728136,
         radius: 2
       },
       gisFormRules: {

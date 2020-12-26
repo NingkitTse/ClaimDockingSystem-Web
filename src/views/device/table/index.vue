@@ -320,18 +320,18 @@ export default {
         current: this.current,
         size: this.pageSize
       }, this.form)
-      // if (this.searchByRela) {
-      Object.assign(param, {
-        ownDept: this.powerSupplyCompany,
-        ownTransStation: this.powerSupplyAdmin
-      })
-      getEntityInfos(param).then(resp => this.processEntityInfos(resp))
-      // } else {
-      //   Object.assign(param, {bounds: this.bounds}, this.center, {
-      //     radius: this.radius * 1000
-      //   });
-      //   getEntityInfosByGis(param).then(resp => this.processEntityInfos(resp));
-      // }
+      if (this.searchByRela) {
+        Object.assign(param, {
+          ownDept: this.powerSupplyCompany,
+          ownTransStation: this.powerSupplyAdmin
+        })
+        getEntityInfos(param).then(resp => this.processEntityInfos(resp))
+      } else {
+        Object.assign(param, { bounds: this.bounds }, this.center, {
+          radius: this.radius * 1000
+        })
+        getEntityInfosByGis(param).then(resp => this.processEntityInfos(resp))
+      }
     },
     getEntityType(key) {
       return entityTypeMap[key] || 'text'
