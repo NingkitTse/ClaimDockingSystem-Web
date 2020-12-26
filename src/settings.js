@@ -1,22 +1,22 @@
-let url = '';
-let webSocketUrl = '';
+let url = ''
+let webSocketUrl = ''
 console.info(process.env.NODE_ENV)
 switch (process.env.NODE_ENV) {
-  case 'mock': 
+  case 'mock':
     url = `${process.env.VUE_APP_BASE_WEB_URL}:${process.env.VUE_APP_BASE_WEB_PORT}`
-    break;
-  case 'production':
-    url = "http://218.244.150.51:8080/power";
-    webSocketUrl = "ws://218.244.150.51:8080/power/imserver";
-    break;
-  case 'staging':
-    url = "http://49.123.105.10:8328/power"
-    webSocketUrl = "ws://49.123.105.10:8328/power/imserver";
-    break;
+    break
+  case 'production': // 电力系统内网IP
+    url = 'http://10.233.48.50:8328/power'
+    webSocketUrl = 'ws://10.233.48.50:8328/power/imserver'
+    break
+  case 'staging': // 测试云环境
+    url = 'http://218.244.150.51:8328/power'
+    webSocketUrl = 'ws://218.244.150.51:8328/power/imserver'
+    break
   case 'development':
-    url = "http://127.0.0.1:8080/power";
-    webSocketUrl = "ws://127.0.0.1:8080/power/imserver";
-    break;
+    url = 'http://127.0.0.1:8080/power'
+    webSocketUrl = 'ws://127.0.0.1:8080/power/imserver'
+    break
 }
 
 module.exports = {
