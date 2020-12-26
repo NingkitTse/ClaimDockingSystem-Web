@@ -66,17 +66,22 @@ export const constantRoutes = [
       name: 'deviceDetail',
       component: () => import('@/views/device/index'),
       meta: { title: '设备信息补充', icon: 'dashboard' }
-    },{
+    }, {
       path: 'searchDeviceByRela',
       name: 'searchDeviceByRela',
       component: () => import('@/views/device/searchByRela/index'),
       meta: { title: '通过组织关系查找设备', icon: 'dashboard' }
-    },{
+    }, {
       path: 'searchDeviceByGis',
       name: 'searchDeviceByGis',
+      component: () => import('@/views/device/searchByGis/index.vue'),
+      meta: { title: '通过经纬度查找设备', icon: 'dashboard' }
+    }, {
+      path: 'searchDeviceByEchartsGis',
+      name: 'searchDeviceByEchartsGis',
       component: () => import('@/views/device/searchByGis/echartsMap.vue'),
       meta: { title: '通过GIS查找设备', icon: 'dashboard' }
-    },{
+    }, {
       path: 'deviceTable',
       name: 'deviceTable',
       component: () => import('@/views/device/table/index'),

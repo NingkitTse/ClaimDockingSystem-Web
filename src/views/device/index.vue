@@ -10,7 +10,8 @@
     </div>
     <el-button-group class="btn-group">
       <el-button @click="searchByRela()">通过组织关系查找设备</el-button>
-      <el-button @click="searchByGis()">通过GIS地图查找设备</el-button>
+      <el-button @click="searchByGis()">通过经纬度查找设备</el-button>
+      <el-button @click="searchByEchartsGis()">通过GIS地图查找设备</el-button>
     </el-button-group>
 
     <el-dialog title="设备信息补充" :visible.sync="dialogVisible" width="50%" :before-close="handleClose">
@@ -138,6 +139,9 @@
       },
       searchByRela() {
         this.$router.push("./searchDeviceByRela")
+      },
+      searchByEchartsGis() {
+        this.$router.push("./searchDeviceByEchartsGis")
       },
       searchByGis() {
         this.$router.push("./searchDeviceByGis")

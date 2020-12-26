@@ -1,7 +1,7 @@
 <template>
   <div class="search-by-gis">
     <el-form ref="gisForm" class="gis-form" :model="gisForm" :rules="gisFormRules" label-width="110px">
-      <el-form-item v-if="bounds" label="边界信息">
+      <!-- <el-form-item v-if="bounds" label="边界信息">
         <div class="bound-item">
           界面西经： <span>{{ bounds.Zd || "" }}</span>
         </div>
@@ -14,7 +14,7 @@
         <div class="bound-item">
           界面南纬： <span>{{ bounds.Je || "" }}</span>
         </div>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="中心点经度(°)" prop="lng">
         <el-input v-model="gisForm.lng" type="text" placeholder="请输入中心点经度" />
       </el-form-item>
@@ -29,14 +29,14 @@
         <el-button type="success" @click="nextStep()">下一步</el-button>
       </el-button-group>
     </el-form>
-    <baidu-map
+    <!-- <baidu-map
       class="map-div"
       :center="gisForm"
       :zoom="zoom"
       :scroll-wheel-zoom="true"
       @ready="handlerMapInitHouseDetail"
       @click="getMapClickInfo"
-    />
+    /> -->
   </div>
 </template>
 <script>
@@ -82,20 +82,20 @@ export default {
     }
   },
   watch: {
-    gisForm: {
-      handler(val, newVal) {
-        this.repaintCircle()
-      },
-      deep: true
-    },
-    center() {
-      this.gisForm.lng = this.center.lng + ''
-      this.gisForm.lat = this.center.lat + ''
-      // this.repaintCircle();
-    },
-    zoom() {
-      this.repaintCircle()
-    }
+    // gisForm: {
+    //   handler(val, newVal) {
+    //     this.repaintCircle()
+    //   },
+    //   deep: true
+    // },
+    // center() {
+    //   this.gisForm.lng = this.center.lng + ''
+    //   this.gisForm.lat = this.center.lat + ''
+    //   // this.repaintCircle();
+    // },
+    // zoom() {
+    //   this.repaintCircle()
+    // }
   },
   created() {
     this.$store.dispatch('entity/setSearchByReal', false)
