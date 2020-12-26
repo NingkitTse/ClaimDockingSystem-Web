@@ -18,94 +18,94 @@
       </el-form-item> -->
       <el-form-item label="地级市">
         <el-select v-model="form.powerSupplyCompany" placeholder="选择地级市" @change="onchangeCompany()">
-          <el-option v-for="supplyCompany of supplyCompanies" :key="supplyCompany.postcode" :label="supplyCompany.orgName" :value="supplyCompany.postcode"></el-option>
+          <el-option v-for="supplyCompany of supplyCompanies" :key="supplyCompany.postcode" :label="supplyCompany.orgName" :value="supplyCompany.postcode" />
         </el-select>
       </el-form-item>
       <el-form-item label="变电所">
         <el-select v-if="form.powerSupplyCompany" v-model="form.powerSupplyAdmin" placeholder="选择变电所">
-          <el-option v-for="supplyAdmin of supplyAdmins" :key="supplyAdmin.orgNo" :label="supplyAdmin.orgName" :value="supplyAdmin.orgNo"></el-option>
+          <el-option v-for="supplyAdmin of supplyAdmins" :key="supplyAdmin.orgNo" :label="supplyAdmin.orgName" :value="supplyAdmin.orgNo" />
         </el-select>
         <span v-else>请先选择地级市</span>
       </el-form-item>
       <el-form-item>
         <el-button-group class="btn-group">
-          <el-button @click="preStep()" type="">上一步</el-button>
-          <el-button @click="nextStep()" type="success">下一步</el-button>
+          <el-button type="" @click="preStep()">上一步</el-button>
+          <el-button type="success" @click="nextStep()">下一步</el-button>
         </el-button-group>
       </el-form-item>
     </el-form>
   </div>
 </template>
 <script>
-  import store from '@/store'
-  export default {
-    data() {
-      return {
-        form: {
-          powerSupplyCompany: "",
-          powerSupplyAdmin: "",
-        },
-        // supplyCompanies: [{
-        //     name: "国家电网",
-        //     src: "static/img/powerSupplyCompany/stateGridCorporationOfChina.jpg",
-        //     supplyAdmins: ["所属变电站"],
-        //   },
-        //   {
-        //     name: "湖南省电网",
-        //     src: "static/img/powerSupplyCompany/chinaGuoDian.jpg",
-        //     supplyAdmins: ["涟源所", "伏口所", "七星所", "枫杨所", "涟源城区", "茅白所"],
-        //   }
-        // ],
-        supplyCompanies: [],
-        supplyAdmins: [],
-        // rules: {
-        //   powerSupplyCompany: [
-        //     { required: true, message: '请输选择地级市', trigger: 'change' }
-        //   ],
-        //   powerSupplyAdmin: [
-        //     { required: true, message: '请输选择变电所', trigger: 'change' }
-        //   ],
-        // }
-      }
+import store from '@/store'
+export default {
+  data() {
+    return {
+      form: {
+        powerSupplyCompany: '',
+        powerSupplyAdmin: ''
+      },
+      // supplyCompanies: [{
+      //     name: "国家电网",
+      //     src: "static/img/powerSupplyCompany/stateGridCorporationOfChina.jpg",
+      //     supplyAdmins: ["所属变电站"],
+      //   },
+      //   {
+      //     name: "湖南省电网",
+      //     src: "static/img/powerSupplyCompany/chinaGuoDian.jpg",
+      //     supplyAdmins: ["涟源所", "伏口所", "七星所", "枫杨所", "涟源城区", "茅白所"],
+      //   }
+      // ],
+      supplyCompanies: [],
+      supplyAdmins: []
+      // rules: {
+      //   powerSupplyCompany: [
+      //     { required: true, message: '请输选择地级市', trigger: 'change' }
+      //   ],
+      //   powerSupplyAdmin: [
+      //     { required: true, message: '请输选择变电所', trigger: 'change' }
+      //   ],
+      // }
+    }
+  },
+  created() {
+    this.powerSupplyCompany = this.$store.getters['powerSupplyCompany']
+    this.powerSupplyAdmin = this.$store.getters['powerSupplyAdmin']
+
+    this.$store.dispatch('entity/setSearchByReal', true)
+    this.$store.dispatch('dict/addDepts', { parentPostcode: 'CODE' }).then(res => {
+      this.supplyCompanies = this.$store.getters['childDeptMap'].get('CODE')
+    })
+  },
+  methods: {
+    preStep() {
+      this.$router.back(-1)
     },
-    created() {
-      this.powerSupplyCompany = this.$store.getters["powerSupplyCompany"];
-      this.powerSupplyAdmin = this.$store.getters["powerSupplyAdmin"];
-      
-      this.$store.dispatch('entity/setSearchByReal', true);
-      this.$store.dispatch('dict/addDepts', {parentPostcode: "CODE"}).then(res => {
-        this.supplyCompanies = this.$store.getters["childDeptMap"].get("CODE");
-      });
+    nextStep() {
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          this.$store.dispatch('entity/setSupplyRela', {
+            powerSupplyCompany: this.form.powerSupplyCompany,
+            powerSupplyAdmin: this.form.powerSupplyAdmin
+          }).then(res => {
+            this.$router.push('./deviceTable')
+          })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     },
-    methods: {
-      preStep() {
-        this.$router.back(-1);
-      },
-      nextStep() {
-        this.$refs.form.validate((valid) => {
-          if (valid) {
-            this.$store.dispatch('entity/setSupplyRela', {
-              powerSupplyCompany: this.form.powerSupplyCompany,
-              powerSupplyAdmin: this.form.powerSupplyAdmin
-            }).then(res => {
-              this.$router.push("./deviceTable");
-            });
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
-      onchangeCompany(company) {
-        this.$store.dispatch('dict/addDepts', {parentPostcode: this.form.powerSupplyCompany}).then(res => {
-          this.supplyAdmins = this.$store.getters["childDeptMap"].get(this.form.powerSupplyCompany);
-        });
-      },
-      onchangeAdmin() {
-        this.$store.dispatch('dict/addDepts', {parentPostcode: this.form.powerSupplyAdmin});
-      },
+    onchangeCompany(company) {
+      this.$store.dispatch('dict/addDepts', { parentPostcode: this.form.powerSupplyCompany }).then(res => {
+        this.supplyAdmins = this.$store.getters['childDeptMap'].get(this.form.powerSupplyCompany)
+      })
+    },
+    onchangeAdmin() {
+      this.$store.dispatch('dict/addDepts', { parentPostcode: this.form.powerSupplyAdmin })
     }
   }
+}
 
 </script>
 <style lang="scss" scoped>
